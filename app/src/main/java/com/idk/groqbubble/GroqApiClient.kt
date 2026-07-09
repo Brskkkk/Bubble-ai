@@ -154,7 +154,7 @@ class GroqApiClient(private val apiKey: String, private var selectedModel: Strin
                 val body = response.body?.string() ?: return@withContext listOf(TEXT_MODEL)
                 val json = JSONObject(body)
                 val data = json.optJSONArray("data") ?: return@withContext listOf(TEXT_MODEL)
-                
+
                 val models = mutableListOf<String>()
                 for (i in 0 until data.length()) {
                     val modelObj = data.optJSONObject(i)
@@ -167,8 +167,10 @@ class GroqApiClient(private val apiKey: String, private var selectedModel: Strin
             listOf(TEXT_MODEL)
         }
     }
+
+    suspend fun searchWeb(query: String): String? = withContext(Dispatchers.IO) {
         try {
-            val encoded = java.net.URLEncoder.encode(query, "UTF-8")
+            val encoded = URLEncoder.encode(query, "UTF-8")
             val request = Request.Builder()
                 .url("https://r.jina.ai/http://html.duckduckgo.com/html/?q=$encoded")
                 .header(
